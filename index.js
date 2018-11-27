@@ -1,28 +1,24 @@
-const { ApolloServer, gql } = require('apollo-server');
+const { ApolloServer, gql } = require("apollo-server");
 
 // This is a (sample) collection of books we'll be able to query
 // the GraphQL server for.  A more complete example might fetch
 // from an existing data source like a REST API or database.
 const books = [
   {
-    title: 'Harry Potter and the Chamber of Secrets',
-    author: 'J.K. Rowling',
+    title: "Harry Potter and the Chamber of Secrets",
+    author: "J.K. Rowling"
   },
   {
-    title: 'Jurassic Park',
-    author: 'Michael Crichton',
+    title: "Jurassic Park",
+    author: "Michael Crichton"
   },
   {
-    title: 'Patriot Games',
-    author: 'Tom Clancy',
+    title: "Hunt For Red October",
+    author: "Tom Clancy"
   },
   {
-    title: 'Hunt For Red October',
-    author: 'Tom Clancy',
-  },
-  {
-    title: 'Sphere',
-    author: 'Michael Crichton',
+    title: "Sphere",
+    author: "Michael Crichton"
   }
 ];
 
@@ -37,29 +33,38 @@ const typeDefs = gql`
     author: String
   }
 
+  type Author {
+    name: String
+    books: [Book]
+  }
+
   # The "Query" type is the root of all GraphQL queries.
   # (A "Mutation" type will be covered later on.)
   type Query {
-    books: [Book]
-    book(author:$author)
+    getBooks: [Book]
   }
-
-  type Query {
-    book: (
-      where: {
-        author: "Tom Clancy"
-    }
-  }
-
 `;
 
 // Resolvers define the technique for fetching the types in the
 // schema.  We'll retrieve books from the "books" array above.
 const resolvers = {
   Query: {
-    books: () => books,
-  },
+    getBooks: () => books
+  }
 };
+
+// const RootQuery = new GraphQLObjectType({
+//   name: "RootQueryType",
+//   fields: {
+//     books: {
+//       type: new GraphQLList(Book),
+//       args: {},
+//       async resolve(parentValue, args) {
+//         return books;
+//       }
+//     }
+//   }
+// });
 
 // In the most basic sense, the ApolloServer can be started
 // by passing type definitions (typeDefs) and the resolvers

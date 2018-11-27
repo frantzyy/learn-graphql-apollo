@@ -1,0 +1,6 @@
+query myFirstQuery {
+  getBooks {
+    title
+    author
+  }
+}
