@@ -1,0 +1,13 @@
+query GetLaunches {
+  launches(pageSize: 3) {
+    launches {
+      id
+      isBooked
+      mission {
+        name
+        missionPatch
+      }
+    }
+    
+  }
+}
