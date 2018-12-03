@@ -5,6 +5,7 @@ This is the fullstack app for the [Apollo tutorial](http://apollographql.com/doc
 ## File structure
 
 The app is split out into two folders:
+
 - `start`: Starting point for the tutorial
 - `final`: Final version
 
@@ -23,3 +24,7 @@ and
 ```bash
 cd final/client && npm i && npm start
 ```
+
+## Published using Zeit
+
+https://server-hq7lv8qbu.now.sh
