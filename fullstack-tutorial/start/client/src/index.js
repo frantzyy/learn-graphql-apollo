@@ -1,41 +1,60 @@
+import React from "react";
+import ReactDOM from "react-dom";
+
 import { ApolloClient } from "apollo-client";
 import { InMemoryCache } from "apollo-cache-inmemory";
 import { HttpLink } from "apollo-link-http";
-import { onError } from "apollo-link-error";
-import { ApolloLink } from "apollo-link";
+import { Query, ApolloProvider } from "react-apollo";
 import gql from "graphql-tag";
 
+import Pages from "./pages";
+import Login from "./pages/login";
+import { resolvers, typeDefs } from "./resolvers";
+import injectStyles from "./styles";
+
+// Set up our apollo-client to point at the server we created
+// this can be local or a remote endpoint
+const cache = new InMemoryCache();
 const client = new ApolloClient({
-  link: ApolloLink.from([
-    onError(({ graphQLErrors, networkError }) => {
-      if (graphQLErrors)
-        graphQLErrors.map(({ message, locations, path }) =>
-          console.log(
-            `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-          )
-        );
-      if (networkError) console.log(`[Network error]: ${networkError}`);
-    }),
-    new HttpLink({
-      // uri: "https://server-hq7lv8qbu.now.sh/graphql",
-      uri: "http://localhost:4000/graphql",
-      credentials: "same-origin"
-    })
-  ]),
-  cache: new InMemoryCache()
+  cache,
+  link: new HttpLink({
+    uri: "http://localhost:4000/graphql",
+    headers: {
+      authorization: localStorage.getItem("token"),
+      "client-name": "Space Explorer [web]",
+      "client-version": "1.0.0"
+    }
+  }),
+  initializers: {
+    isLoggedIn: () => !!localStorage.getItem("token"),
+    cartItems: () => []
+  },
+  resolvers,
+  typeDefs
 });
 
-client
-  .query({
-    query: gql`
-      query GetLaunch {
-        launch(id: 56) {
-          id
-          mission {
-            name
-          }
-        }
-      }
-    `
-  })
-  .then(result => console.log(result));
+/**
+ * Render our app
+ * - We wrap the whole app with ApolloProvider, so any component in the app can
+ *    make GraphqL requests. Our provider needs the client we created above,
+ *    so we pass it as a prop
+ * - We need a router, so we can navigate the app. We're using Reach router for this.
+ *    The router chooses between which component to render, depending on the url path.
+ *    ex: localhost:3000/login will render only the `Login` component
+ */
+
+const IS_LOGGED_IN = gql`
+  query IsUserLoggedIn {
+    isLoggedIn @client
+  }
+`;
+
+injectStyles();
+ReactDOM.render(
+  <ApolloProvider client={client}>
+    <Query query={IS_LOGGED_IN}>
+      {({ data }) => (data.isLoggedIn ? <Pages /> : <Login />)}
+    </Query>
+  </ApolloProvider>,
+  document.getElementById("root")
+);
