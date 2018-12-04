@@ -1,6 +1,6 @@
 module.exports = {
   client: {
-    name: "Space Explorer [web]",
-    service: "space-explorer"
+    name: "fullstack-tutorial-1979",
+    service: "fullstack-tutorial-1979:1cunJWDRi8Uu3EkCbZwDyg" //this isn't right
   }
 };
